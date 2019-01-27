@@ -152,6 +152,7 @@ jobs:
   - script: |
       # TODO: drop this when `safaridriver --version` is supported.
       SAFARI_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Safari.app/Contents/Info.plist) ($(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' /Applications/Safari.app/Contents/Info.plist))"
+      echo "SAFARI_VERSION=$SAFARI_VERSION"
       no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --browser-version "$SAFARI_VERSION" safari dom
     displayName: 'Run tests'
   - task: PublishBuildArtifacts@1
