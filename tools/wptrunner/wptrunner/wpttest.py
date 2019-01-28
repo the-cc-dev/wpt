@@ -93,6 +93,8 @@ class RunInfo(dict):
             self["debug"] = False
         if browser_version:
             self["browser_version"] = browser_version
+        else:
+            self["browser_version"] = "NO BROWSER VERSION"
         if browser_channel:
             self["browser_channel"] = browser_channel
 
