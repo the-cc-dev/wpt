@@ -5,7 +5,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 promise_test(async t => {
-  const input = "Clipboard writeText -> readText test data";
+  const input = "Clipboard writeText -> readText test データ";
 
   await navigator.clipboard.writeText(input);
   const output = await navigator.clipboard.readText();
