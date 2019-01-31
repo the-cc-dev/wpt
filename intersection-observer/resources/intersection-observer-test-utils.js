@@ -85,9 +85,15 @@ function waitForNotification(t, f) {
 //
 // Following these rules will ensure that the test suite will not abort before
 // all test steps have run.
-function runTestCycle(f, description) {
+function runTestCycle(f, description, delay) {
   async_test(function(t) {
-    waitForNotification(t, t.step_func_done(f));
+    if (delay) {
+      step_timeout(() => {
+        waitForNotification(t, t.step_func_done(f));
+      }, delay);
+    } else {
+      waitForNotification(t, t.step_func_done(f));
+    }
   }, description);
 }
 
