@@ -85,7 +85,9 @@ class RunInfo(dict):
         if rev:
             self["revision"] = rev
 
-        self["product"] = product
+        # To deal with edge_webdriver, chrome_android and similar, only use the
+        # first part of the product.
+        self["product"] = product.split("_")[0]
         if debug is not None:
             self["debug"] = debug
         elif "debug" not in self:

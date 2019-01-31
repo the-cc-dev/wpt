@@ -157,6 +157,43 @@ jobs:
     condition: succeededOrFailed()
   - template: tools/ci/azure/cleanup_win10.yml
 
+- job: all_edge
+  displayName: 'all tests (Edge)'
+  #condition: eq(variables['Build.Reason'], 'Schedule')
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/foolip/azure-full-edge')
+  strategy:
+    parallel: 20 # there are 5 agents, but use more chunks
+  timeoutInMinutes: 360
+  pool:
+    name: 'Hosted Windows Client'
+  steps:
+  - template: tools/ci/azure/system_info.yml
+  - template: tools/ci/azure/checkout.yml
+  - template: tools/ci/azure/install_python.yml
+  - template: tools/ci/azure/pip_install.yml
+    parameters:
+      packages: virtualenv
+  - template: tools/ci/azure/install_certs.yml
+  - template: tools/ci/azure/update_hosts.yml
+  - template: tools/ci/azure/update_manifest.yml
+  - script: |
+      md $(Build.ArtifactStagingDirectory)\results
+      md $(Build.ArtifactStagingDirectory)\logs
+      python wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --install-fonts --test-types reftest testharness --this-chunk $(System.JobPositionInPhase) --total-chunks $(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)\results\wpt_report_$(System.JobPositionInPhase).json --log-tbpl $(Build.ArtifactStagingDirectory)\logs\job_$(System.JobPositionInPhase).log edge_webdriver
+    displayName: 'Run tests'
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish results'
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)\results
+      artifactName: 'edge-results'
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish logs'
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)\logs
+      artifactName: 'edge-logs'
+    condition: succeededOrFailed()
+  - template: tools/ci/azure/cleanup_win10.yml
+
 - job: all_macOS
   displayName: 'all tests (Safari Technology Preview)'
   condition: eq(variables['Build.Reason'], 'Schedule')
